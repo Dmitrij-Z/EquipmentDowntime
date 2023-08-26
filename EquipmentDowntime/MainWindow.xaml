@@ -1,0 +1,134 @@
+﻿<Window x:Class="EquipmentDowntime.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:conv="clr-namespace:EquipmentDowntime.Converters"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:bhvrs="clr-namespace:EquipmentDowntime.Behaviors"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:EquipmentDowntime"
+        mc:Ignorable="d" Background="Beige"
+        WindowStartupLocation="CenterScreen" WindowState="Maximized"
+        Title="Сводка о простое оборудования" Height="450" Width="1500" MinWidth="560" MinHeight="240"
+        Icon="Resources/lenivyj_0doydx04bfti_32.png" Closing="Window_Closing">
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Редактировать список оборудования" Click="EditEquipmentList_Click" >
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/oborudovanie_4ylbr6exz80w_32.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Внести сотрудника в список" Click="EditOperatorsList_Click" >
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/rabotnik_etsbq10rvtve_32.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator Height="5" Margin="0,5"/>
+                <MenuItem Header="Добавить новую задачу" DataContext="{Binding downtimeVM}"
+                          Click="AddNewTask_Click" >
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/dobavit_3z372yqb5qw3_32.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator Height="5" Margin="0,5"/>
+                <MenuItem Header="Архив" DataContext="{Binding downtimeVM}"
+                          Click="ShowArchive_Click" >
+                    <MenuItem.Icon>
+                        <Image Source="/Resources/arhiv_qx7992mkwchx_32.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <StackPanel DockPanel.Dock="Top" Margin="0,5,0,10">
+            <TextBlock HorizontalAlignment="Center" Style="{StaticResource TblockMainTitle}" Margin="0,5"
+                Text="Ежедневная сводка о простое оборудования (обслуживание, ремонт, доработка)" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                <TextBlock Text="на " Style="{StaticResource TblockMainTitle}"/>
+                <TextBlock  Style="{StaticResource TblockMainTitle}"
+                    Text="{Binding Source={x:Static sys:DateTime.Today}, StringFormat='{}{0:dd.MM.yyyy}'}" />
+                <TextBlock Text=" г." Style="{StaticResource TblockMainTitle}" />
+            </StackPanel>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5">
+            <Border BorderBrush="Black" BorderThickness="1" Margin="15,0,0,0">
+                <TextBlock Width="50" Background="White"/>
+            </Border>
+            <TextBlock Text=" - ожидает выполнения; "/>
+            <Border BorderBrush="Black" BorderThickness="1" Margin="15,0,0,0">
+                <TextBlock Width="50" Background="LightGreen"/>
+            </Border>
+            <TextBlock Text=" - выполнено; "/>
+            <Border BorderBrush="Black" BorderThickness="1" Margin="15,0,0,0">
+                <TextBlock Width="50" Background="Red"/>
+            </Border>
+            <TextBlock Text=" - отменено; "/>
+        </StackPanel>
+        <DataGrid x:Name="dgDowntime" DataContext="{Binding downtimeVM}" 
+                  ItemsSource="{Binding DowntimeCollection, UpdateSourceTrigger=PropertyChanged}"
+                  SelectedItem="{Binding SelectedDowntime}"
+                  AutoGenerateColumns="False"
+                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                  ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                  CellStyle="{StaticResource DataGridCellBackgroundStyle}"
+                  CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+            <i:Interaction.Behaviors>
+                <bhvrs:DataGridMultiSelectionBehavior SelectedItems="{Binding SelectedDowntimeList}"/>
+            </i:Interaction.Behaviors>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Цех №" Binding="{Binding Department}" MinWidth="50" />
+                <DataGridTextColumn Header="Наименование оборудования" ElementStyle="{StaticResource WrapText}"
+                                    Binding="{Binding EquipmentName}"  MinWidth="100"/>
+                <DataGridTextColumn Header="Инв. №" Binding="{Binding InventoryId}" MinWidth="70" />
+                <DataGridTextColumn Header="Причина выхода из строя и краткая информация по виду ремонта, модернизации или доработке."
+                                    ElementStyle="{StaticResource WrapText}"
+                                    Binding="{Binding CauseOfFailure}" MinWidth="100" Width="*" />
+                <DataGridTextColumn Header="Дата поступления в ремонт"
+                                    Binding="{Binding ReceiptDateForRepair, StringFormat={}{0:dd.MM.yyyy}}"
+                                    MinWidth="100" MaxWidth="150"/>
+                <DataGridTextColumn Header="Ремонт оборудования (используемые материалы и краткое описание)"
+                                    ElementStyle="{StaticResource WrapText}"
+                                    Binding="{Binding Solution}" MinWidth="100" MaxWidth="280" />
+                <DataGridTextColumn Header="Оринтировочная дата выхода из ремонта"
+                                    Binding="{Binding DateOfExitFromRepair, StringFormat={}{0:dd.MM.yyyy}}"
+                                    MinWidth="70" MaxWidth="150" />
+                <DataGridTextColumn Header="ФИО исполнителя" Binding="{Binding OperatorName}" MinWidth="70" />
+                <!--<DataGridTextColumn Header="Выполнение" Binding="{Binding StateDescription}" MinWidth="50" />-->
+            </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu FontSize="16"
+                    Visibility="{Binding DowntimeCollection.Count, Converter={conv:IntToVisibilityHiddenConverter}}">
+                    <MenuItem Header="Отметить выбранные как выполненные" Margin="0,0,0,5"
+                                  IsEnabled="{Binding SelectedDowntime, Converter={conv:MenuItemToEnabledConverter}}"
+                                  Command="{Binding СompletedTaskCommand}">
+                        <MenuItem.Icon>
+                            <Image Source="/Resources/proverka_dp3vpawktgse_32.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Отметить выбранные как отмененные" Margin="0,5"
+                                  IsEnabled="{Binding SelectedDowntime, Converter={conv:MenuItemToEnabledConverter}}"
+                                  Command="{Binding CancelledTaskCommand}">
+                        <!--<MenuItem.CommandParameter>
+                            <MultiBinding Converter="{StaticResource multiConverter}">
+                                <Binding />
+                                <Binding Path="IsSelected" RelativeSource="{RelativeSource AncestorType=DataGrid}"/>
+                            </MultiBinding>
+                        </MenuItem.CommandParameter>-->
+                        <MenuItem.Icon>
+                            <Image Source="/Resources/udalit_roe9jh9759pq_32.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Вернуть выбранные состояние простоя" Margin="0,5,0,0"
+                                  IsEnabled="{Binding SelectedDowntime, Converter={conv:MenuItemToEnabledConverter}}"
+                                  Command="{Binding ReturnTaskCommand}">
+                        <!--CommandParameter="{Binding PlacementTarget, RelativeSource={RelativeSource AncestorType=ContextMenu}}">-->
+                        <MenuItem.Icon>
+                            <Image Source="/Resources/vozvrat_6ejckl4ii0pt_32.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+        </DataGrid>
+    </DockPanel>
+</Window>

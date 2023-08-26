@@ -1,0 +1,18 @@
+﻿<Application x:Class="EquipmentDowntime.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:EquipmentDowntime"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Dictionaries/DatagridDict.xaml"/>
+                <ResourceDictionary Source="Dictionaries/ButtonDict.xaml"/>
+                <ResourceDictionary Source="Dictionaries/TextBoxDict.xaml"/>
+                <ResourceDictionary Source="Dictionaries/TextBlockDict.xaml"/>
+                <ResourceDictionary Source="Dictionaries/DatePickerDict.xaml"/>
+                <ResourceDictionary Source="Dictionaries/ParametersDict.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

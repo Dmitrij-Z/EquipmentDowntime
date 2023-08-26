@@ -1,0 +1,108 @@
+﻿<Window x:Class="EquipmentDowntime.DowntimeData.AddNewTask"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:conv="clr-namespace:EquipmentDowntime.Converters"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        Background="Beige"
+        Title="Новая задача" Height="480" Width="500"  MinWidth="350" MinHeight="90"
+        Icon="/EquipmentDowntime;component/Resources/dobavit_3z372yqb5qw3_32.png">
+    <StackPanel Margin="5" DataContext="{Binding downtimeVM}">
+        <Grid Margin="5,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="160"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Инвентарный номер:"
+                       Style="{StaticResource TblockTitle}"/>
+            <TextBox Grid.Row="0" Grid.Column="1"
+                     Text="{Binding NewTaskInventoryId, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     Style="{StaticResource TboxGeneralStyle}"/>
+            <Separator Grid.Row="1" Grid.ColumnSpan="2"/>
+            <TextBlock Grid.Row="2" Grid.Column="0"
+                       Text="Наименование оборудования:" Style="{StaticResource TblockTitleWrap}"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" TextWrapping="Wrap" VerticalAlignment="Center"
+                     Text="{Binding EquipmentInfo[0].EquipmentName}"/>
+            <Separator Grid.Row="3" Grid.ColumnSpan="2"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Цех №:" Style="{StaticResource TblockTitle}"/>
+            <TextBlock Grid.Row="4" Grid.Column="1"
+                       Text="{Binding EquipmentInfo[0].Department}"/>
+            <Separator Grid.Row="5" Grid.ColumnSpan="2"/>
+            <TextBlock Grid.Row="6" Grid.ColumnSpan="2" Visibility="{Binding IsAlreadyInTask, Converter={conv:BoolVisibilityCollapsedConverter}}"
+                       Text="Уже находится в списке задач!"
+                       Style="{StaticResource TblockAlreadyInTaskList}"/>
+        </Grid>
+        <Grid Height="5" Background="Gray"/>
+        <Grid Margin="5,10" IsEnabled="{Binding AddingDescriptionNewTaskIsPossible}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="170"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Дата поступления в ремонт:"
+                       Style="{StaticResource TblockTitleWrap}"/>
+            <DatePicker Grid.Row="0" Grid.Column="1"
+                        CalendarStyle="{StaticResource dpCalendar}"
+                        Style="{StaticResource dp}"
+                        DisplayDate="{x:Static System:DateTime.Now}"
+                        SelectedDate="{Binding NewTaskReceiptDateForRepair, Mode=TwoWay, TargetNullValue={x:Static System:DateTime.Now}}" LostFocus="DatePicker_LostFocus"/>
+
+            <Separator Grid.Row="1" Grid.ColumnSpan="2"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="Причина выхода из строя / вид ремонта:"
+                     Style="{StaticResource TblockTitleWrap}"/>
+            <TextBox Grid.Row="2" Grid.Column="1" TextWrapping="Wrap"
+                     Text="{Binding NewTaskCauseOfFailure, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     Style="{StaticResource TboxGeneralStyle}"/>
+            <Separator Grid.Row="3" Grid.ColumnSpan="2"/>
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="Ремонт оборудования, материалы:"
+                     Style="{StaticResource TblockTitleWrap}"/>
+            <TextBox Grid.Row="4" Grid.Column="1"
+                     Text="{Binding NewTaskSolution, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                     Style="{StaticResource TboxGeneralStyle}"/>
+            <Separator Grid.Row="5" Grid.ColumnSpan="2"/>
+            <TextBlock Grid.Row="6" Grid.Column="0" Text="Ориентировачная дата выхода из ремонта:"
+                     Style="{StaticResource TblockTitleWrap}"/>
+            <DatePicker Grid.Row="6" Grid.Column="1" CalendarStyle="{StaticResource dpCalendar}"
+                        Style="{StaticResource dp}"
+                        SelectedDate="{Binding NewTaskDateOfExitFromRepair, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
+            <Separator Grid.Row="7" Grid.ColumnSpan="2"/>
+            <TextBlock Grid.Row="8" Grid.Column="0" Text="ФИО исполнителя:"
+                        Style="{StaticResource TblockTitleWrap}"/>
+            <ComboBox Grid.Row="8" Grid.Column="1"
+                        ItemsSource="{Binding operators}"
+                        DisplayMemberPath="Name"
+                        SelectedItem="{Binding SelectedOperator, UpdateSourceTrigger=PropertyChanged}"/>
+            <Separator Grid.Row="9" Grid.ColumnSpan="2"/>
+            <Button Content="Добавить" Margin="0,15,0,0"
+                    Grid.Row="10" Grid.ColumnSpan="2"
+                    IsEnabled="{Binding AddingNewTaskIsPossible}"
+                    Command="{Binding SaveNewTaskCommand}"
+                    Style="{StaticResource OvalButton}"
+                    Click="AddNewTaskButton_Click"/>
+        </Grid>
+    </StackPanel>
+</Window>
